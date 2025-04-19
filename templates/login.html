@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgriSol Bot</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <img src="{{ url_for('static', filename='images/agrisol-logo.png') }}" alt="AgriSol Logo">
+                <span>A unit of GYAANKOOL RESEARCH LABS</span>
+            </div>
+            <select class="language-dropdown">
+                <option value="en">Language</option>
+                <option value="en">English</option>
+                <option value="hi">Hindi</option>
+                <option value="kn">Kannada</option>
+                <option value="te">Telugu</option>
+                <option value="ta">Tamil</option>
+                <option value="mr">Marathi</option>
+            </select>
+        </header>
+        <div class="login-form">
+            <div class="welcome-text">
+                <span>🙌</span>
+                <h2>Welcome to AgriSol Bot</h2>
+                <p>Help us understand your farm better to provide personalised advice</p>
+            </div>
+            <div class="form-content">
+                <div class="form-section">
+                    <h3>Personal Information</h3>
+                    <div class="form-group">
+                        <label for="name">Name*</label>
+                        <input type="text" id="name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile">Mobile number*</label>
+                        <input type="tel" id="mobile" name="mobile" placeholder="+91" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="location">Location</label>
+                        <select id="location" name="location">
+                            <option value="">Select</option>
+                            <option value="maharashtra">Maharashtra</option>
+                            <option value="karnataka">Karnataka</option>
+                            <option value="tamilnadu">Tamil Nadu</option>
+                        </select>
+                        <p class="manual-entry">Can't find your location? Enter manually</p>
+                        <input type="text" id="manual-location" name="manual-location" style="display: none;">
+                    </div>
+                </div>
+                <div class="form-section">
+                    <h3>Crop Information</h3>
+                    <div class="form-group">
+                        <label for="primary-crop">Primary Crop*</label>
+                        <select id="primary-crop" name="primary-crop" required>
+                            <option value="">Select</option>
+                            <option value="rice">Rice</option>
+                            <option value="millet">Millet</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="growth-stage">Growth Stage*</label>
+                        <select id="growth-stage" name="growth-stage" required>
+                            <option value="">Select</option>
+                            <option value="flowering">Flowering</option>
+                            <option value="harvesting">Harvesting</option>
+                        </select>
+                    </div>
+                    <button class="add-crop-btn">+ Add Crop</button>
+                    <div class="form-group challenges">
+                        <label>Current Challenges (Optional)</label>
+                        <div class="challenge-options">
+                            <button type="button" class="challenge-btn">Pest Control</button>
+                            <button type="button" class="challenge-btn">Market Price Issues</button>
+                            <button type="button" class="challenge-btn">Soil Health</button>
+                            <button type="button" class="challenge-btn">Irrigation</button>
+                            <button type="button" class="challenge-btn">Weather Concerns</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button class="get-started-btn">Get Started ➡️</button>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+</html>

@@ -1,0 +1,5 @@
+./botenv
+botenv
+.vscode
+.env
+./env
