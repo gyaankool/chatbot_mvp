@@ -5,14 +5,11 @@ from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chat_models import ChatOpenAI
 from langchain.chains import RetrievalQA
-from langchain.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader  # ✅ Updated import
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 load_dotenv()
 app = Flask(__name__)
-
-# Path to store the FAISS vector database
-VECTOR_DB_PATH = "vector_db"
 
 # Updated for multiple PDFs for different languages
 PDF_PATHS = {
@@ -24,43 +21,42 @@ PDF_PATHS = {
     "Marathi": ["pdfs/marathi1.pdf", "pdfs/marathi2.pdf", "pdfs/marathi3.pdf", "pdfs/marathi4.pdf", "pdfs/marathi5.pdf"],
 }
 
+def get_vector_db_path(language):
+    return f"vector_db_{language.lower()}"
+
 def create_vector_db(language):
     pdf_paths = PDF_PATHS.get(language)
     if not pdf_paths:
         return None
 
     all_text = ""
-    if isinstance(pdf_paths, list):
-        for pdf_path in pdf_paths:
-            if os.path.exists(pdf_path):
-                loader = PyPDFLoader(pdf_path)
-                documents = loader.load()
-                all_text += "\n".join([doc.page_content for doc in documents])
-            else:
-                return None
-    else:
-        if os.path.exists(pdf_paths):
-            loader = PyPDFLoader(pdf_paths)
+    for pdf_path in pdf_paths:
+        if os.path.exists(pdf_path):
+            print(f"Loading: {pdf_path}")
+            loader = PyPDFLoader(pdf_path)
             documents = loader.load()
-            all_text = "\n".join([doc.page_content for doc in documents])
+            all_text += "\n".join([doc.page_content for doc in documents])
         else:
+            print(f"❌ PDF not found: {pdf_path}")
             return None
 
     text_splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
     chunks = text_splitter.split_text(all_text)
     embeddings = OpenAIEmbeddings()
     vector_db = FAISS.from_texts(chunks, embeddings)
-    
+
     # Save the vector database to disk
-    vector_db.save_local(VECTOR_DB_PATH)
+    vector_db_path = get_vector_db_path(language)
+    vector_db.save_local(vector_db_path)
     return vector_db
 
 def load_or_create_vector_db(language):
-    if os.path.exists(VECTOR_DB_PATH):
-        # Load the vector database if it already exists, with dangerous deserialization allowed
-        return FAISS.load_local(VECTOR_DB_PATH, OpenAIEmbeddings(), allow_dangerous_deserialization=True)
+    vector_db_path = get_vector_db_path(language)
+    if os.path.exists(vector_db_path):
+        print(f"Loading existing vector DB: {vector_db_path}")
+        return FAISS.load_local(vector_db_path, OpenAIEmbeddings(), allow_dangerous_deserialization=True)
     else:
-        # Create the vector database if it doesn't exist
+        print(f"Creating new vector DB for language: {language}")
         return create_vector_db(language)
 
 @app.route("/")
@@ -69,12 +65,11 @@ def index():
 
 @app.route("/chat", methods=["POST"])
 def chat():
-    print("Entered post")
+    print("⚡ Chat request received")
     data = request.get_json()
     language = data.get("language")
     question = data.get("question")
 
-    # Check if the vector database exists and load it
     vector_db = load_or_create_vector_db(language)
     if not vector_db:
         return jsonify({"answer": "❌ PDF not found for selected language."})
@@ -99,4 +94,5 @@ def chat():
     return jsonify({"answer": response})
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # ✅ Required for Render
+    app.run(debug=True, host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))

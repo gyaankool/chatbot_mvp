@@ -2,4 +2,4 @@
 botenv
 .vscode
 .env
-./env
+.env
