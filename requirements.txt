@@ -6,3 +6,4 @@ faiss-cpu
 langchain-community
 pypdf
 pypdf2
+tiktoken
